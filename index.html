@@ -66,6 +66,54 @@ td.sm{min-width:22ch}
 .big-v{margin-top:0}.big-v b{font-size:22px}
 .ok-t{color:var(--ok)}
 button.sm{padding:4px 10px;font-size:13px}
+
+/* Шапка: судно удерживает точку — круг удержания, упоры движителей, волнение */
+.hd{display:grid;grid-template-columns:1fr minmax(220px,340px);align-items:center}
+.hd>div:first-child{min-width:0}
+.hero{width:100%;height:auto;display:block;color:var(--bandInk)}
+@media (max-width:720px){.hd{grid-template-columns:1fr}.hero{max-width:220px;margin:0 auto}.recv .hero{display:none}}
+.hero .wave{fill:none;stroke:currentColor;stroke-opacity:.16;stroke-width:1.2;animation:wv 9s linear infinite}
+.hero .wave.w2{animation-duration:13s;stroke-opacity:.11}.hero .wave.w3{animation-duration:17s;stroke-opacity:.08}
+@keyframes wv{to{transform:translateX(-80px)}}
+.hero .watch{fill:none;stroke:#6bb6e4;stroke-opacity:.55;stroke-width:1.2;stroke-dasharray:4 6;transform-origin:160px 110px;animation:rot 40s linear infinite}
+.hero .watch2{fill:none;stroke:currentColor;stroke-opacity:.18;stroke-width:1}
+@keyframes rot{to{transform:rotate(360deg)}}
+.hero .tgt{stroke:#6bb6e4;stroke-width:1.2;fill:none}
+.hero .ship{transform-origin:160px 110px;animation:hold 11s ease-in-out infinite}
+@keyframes hold{0%,100%{transform:translate(0,0) rotate(0)}25%{transform:translate(5px,-3px) rotate(1.5deg)}50%{transform:translate(-2px,4px) rotate(-1deg)}75%{transform:translate(-5px,-2px) rotate(.8deg)}}
+.hero .hull{fill:currentColor;fill-opacity:.1;stroke:currentColor;stroke-opacity:.85;stroke-width:1.4}
+.hero .deck{fill:none;stroke:currentColor;stroke-opacity:.35;stroke-width:1}
+.hero .thr{stroke:#6bb6e4;stroke-width:2;stroke-linecap:round;animation:pu 2.6s ease-in-out infinite}
+.hero .thr.b{animation-delay:.65s}.hero .thr.c{animation-delay:1.3s}.hero .thr.d{animation-delay:1.95s}
+@keyframes pu{0%,100%{opacity:.15}50%{opacity:.9}}
+.hero .pos{fill:#6bb6e4;animation:blink 1.6s ease-in-out infinite}
+@keyframes blink{50%{opacity:.25}}
+.hero .lbl{font:10px var(--fm);fill:currentColor;fill-opacity:.55;letter-spacing:.06em}
+.verdict{animation:pop .35s ease-out}
+@keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.contact{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px 18px;margin:10px 0 16px}
+.contact a,.contact span{display:block}.contact .k{font-size:12px;color:var(--mut)}.contact .v{font-size:16px;font-variant-numeric:tabular-nums}
+.foot a{color:inherit}
+@media (prefers-reduced-motion:reduce){.hero *,.verdict{animation:none!important}}
+
+.brand{display:inline-flex;align-items:center;gap:10px;color:#7fb4ea;text-decoration:none;margin-bottom:14px;font-size:17px;line-height:1.15;font-weight:500}
+.brand .logo{width:78px;height:auto}
+.org{display:flex;align-items:center;gap:14px;margin:0 0 14px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.org .logo{width:72px;height:auto;flex:none;color:#1f5fa6}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .org .logo{color:#7fb4ea}}
+:root[data-theme="dark"] .org .logo{color:#7fb4ea}
+
+.brand-row{display:flex}
+.site-btn{display:inline-block;margin:0 0 14px 14px;padding:5px 12px;border:1px solid rgba(232,241,246,.35);border-radius:16px;color:var(--bandInk);text-decoration:none;font-size:13px;vertical-align:middle}
+.site-btn:hover{border-color:var(--bandInk)}
+.cls{list-style:none;padding:0;margin:0 0 6px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}@media (max-width:720px){.cls{grid-template-columns:repeat(2,1fr)}}
+.cls li{border:1px solid var(--line);border-radius:8px;padding:8px 12px;background:var(--bg)}
+.cls b{display:block;font-size:16px;color:var(--acc)}.cls span{font-size:12px;color:var(--mut)}
+
+.cls li{display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;padding:12px}
+.cls .em{display:flex;align-items:center;justify-content:center;width:100%;height:92px;background:#fff;border-radius:6px;margin-bottom:6px}
+.cls .em img{max-height:76px;max-width:80%;height:auto;width:auto}
+.cls .em img[src*="classnk"]{max-width:55%;max-height:40px}.cls .em img[src*="rina"]{max-height:56px}
 </style></head><body><div id="root"></div>
 <script>/* Общие функции реестра СДП: отпечаток SHA-256 и номер-якорь. Одинаковы в программе и в реестре. */
 const SDPC=(()=>{
@@ -91,15 +139,24 @@ const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&g
 const fmt=s=>{if(!s)return'—';const[y,m,d]=String(s).slice(0,10).split('-');return d?`${d}.${m}.${y}`:s};
 const KIND={annual:'Ежегодные испытания',fiveyear:'Пятилетние испытания АВПО',initial:'Первоначальные испытания АВПО',modif:'После изменений / ремонта'};
 const QUALS=[['Свидетельство № IDP-2448/26','Подготовка операторов динамического позиционирования судов — базовый курс (раздел B-V/f Кодекса ПДНВ)','ГУМРФ им. адм. С.О. Макарова, Морской учебно-тренажёрный центр','06.03.2026','info@mtc.spb.su, +7 (812) 444-00-04'],['Свидетельство № DPM-1221/24 D','Обслуживание судового оборудования динамического позиционирования (НАВИС, Kongsberg)','ГУМРФ им. адм. С.О. Макарова, МУТЦ; НАВИС','29.02.2024','info@mtc.spb.su, +7 (812) 444-00-04'],['Сертификат № 2429','Ознакомление с системами ДП (НАМП ДП 4; IMCA M 117), испытания системы ДП','Marine Prof, курс одобрен НАМП','10.04.2024','admin@marineprof.com']];
+const LOGO=`<svg class="logo" viewBox="0 0 200 110" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="3.6" stroke-linejoin="round" stroke-linecap="round"><rect x="8" y="6" width="184" height="97" rx="6"/><path d="M68 95 L19 16"/><path d="M68 95 L127 11 L184 96"/><path d="M12 97 Q27 85 42 97 Q55 85 68 97 Q83 85 98 97 Q113 85 128 97 Q143 85 158 97 Q171 85 184 97"/></g><path d="M16 11 L20 32 L33 24 Z" fill="currentColor"/><text x="71" y="66" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="600" font-size="50" fill="currentColor">C</text><text x="130" y="88" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="600" font-size="50" fill="currentColor">P</text></svg>`;
+const HERO=`<svg class="hero" viewBox="0 0 320 220" role="img" aria-label="Судно удерживает позицию по системе динамического позиционирования"><defs><clipPath id="hc"><rect width="320" height="220"/></clipPath></defs><g clip-path="url(#hc)">
+<path class="wave" d="M0 40 q20 -8 40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0"/><path class="wave w2" d="M0 185 q20 -8 40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0"/><path class="wave w3" d="M0 205 q20 -6 40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0"/><path class="wave w3" d="M0 20 q20 -6 40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0"/></g>
+<circle class="watch2" cx="160" cy="110" r="92"/><circle class="watch" cx="160" cy="110" r="78"/>
+<g class="ship"><path class="hull" d="M160 52 C172 62 177 78 177 96 L177 156 Q177 166 167 166 L153 166 Q143 166 143 156 L143 96 C143 78 148 62 160 52Z"/><path class="deck" d="M151 82 h18 v22 h-18z M160 112 v40"/>
+<line class="thr" x1="143" y1="74" x2="124" y2="74"/><line class="thr b" x1="177" y1="80" x2="196" y2="80"/><line class="thr c" x1="151" y1="168" x2="141" y2="186"/><line class="thr d" x1="169" y1="168" x2="181" y2="184"/></g>
+<g class="tgt"><circle cx="160" cy="110" r="6"/><path d="M148 110h24M160 98v24"/></g><circle class="pos" cx="160" cy="110" r="2.4"/>
+<text class="lbl" x="8" y="214">DP · HOLD POSITION</text><text class="lbl" x="250" y="214">DYNPOS-2</text></svg>`;
+const CONTACT=`<div class="contact"><div><span class="k">Мобильный · Telegram, WhatsApp</span><a class="v" href="tel:+79500205087">+7 (950) 02-05-087</a></div><div><span class="k">Городской</span><a class="v" href="tel:+78124673673">+7 (812) 4-673-673</a></div><div><span class="k">Почта</span><a class="v" href="mailto:em@cirspb.ru">em@cirspb.ru</a></div></div>`;
 let R=[],META={},state='load',verdict=null,vnum='',vcode='';
 const byNum=n=>R.find(r=>SDPC.anchor(r.number)==SDPC.anchor(n));
 const openLeft=r=>(r.open||[]).map((o,i)=>({...o,i})).filter(o=>!(r.closed||[]).some(c=>c.i===o.i));
 function stv(r){return r.status=='аннулирован'?{c:'bad',t:'Документ аннулирован'}:r.status=='заменён'?{c:'mid',t:'Документ заменён новой редакцией'}:{c:'ok',t:'Документ подлинный и действителен'}}
 function render(){const h=decodeURIComponent(location.hash.slice(1));const rec=h&&state=='ok'?R.find(r=>SDPC.anchor(r.number)==h):null;
- $('#root').innerHTML=`<header class="band"><div class="wrap hd"><div class="eyebrow">Независимый эксперт СДП · Марченко Е.С.</div><h1>Проверка документов испытаний СДП</h1><p class="lede">Реестр отчётов и заключений об испытаниях систем динамического позиционирования судов.</p></div></header>
+ $('#root').innerHTML=`<header class="band${rec?' recv':''}"><div class="wrap hd"><div><a class="brand" href="https://cirspb.ru/" target="_blank" rel="noopener">${LOGO}<span>Связь и<br>Радионавигация</span></a><a class="site-btn" href="https://cirspb.ru/" target="_blank" rel="noopener">Основной сайт cirspb.ru ↗</a><div class="eyebrow">Экспертное сообщество «Связь и Радионавигация»</div><h1>Проверка документов испытаний СДП</h1><p class="lede">Реестр отчётов и заключений об испытаниях систем динамического позиционирования судов.</p></div>${HERO}</div></header>
  <main class="wrap">${state=='load'?'<p class="hint">Загрузка реестра…</p>':state=='err'?'<div class="verdict bad"><b>Реестр не загрузился</b><div>Проверьте подключение к интернету и обновите страницу.</div></div>':
  rec?banner(rec)+card(rec)+'<p class="foot"><a href="#">Проверить другой документ</a></p>':h?`<div class="verdict bad"><b>Документ не найден в реестре</b><div>Номер из ссылки «${esc(h)}» не зарегистрирован. Документ без записи в реестре не подтверждён.</div></div>${verify()}`:verify()+expert()}
- <footer class="foot">Записей в реестре: ${R.length}${META.updated?` · обновлено ${fmt(META.updated)}`:''}</footer></main>`;bind()}
+ <footer class="foot">Экспертное сообщество «Связь и Радионавигация» · <a href="https://cirspb.ru/" target="_blank" rel="noopener">cirspb.ru</a> · Марченко Е.С. · <a href="tel:+79500205087">+7 (950) 02-05-087</a> · <a href="mailto:em@cirspb.ru">em@cirspb.ru</a><br>Записей в реестре: ${R.length}${META.updated?` · обновлено ${fmt(META.updated)}`:''}</footer></main>`;bind()}
 function banner(r){const v=stv(r);const left=openLeft(r).length;return`<section class="verdict ${v.c} big-v"><b>${v.t}</b><div>${esc(r.vessel?.name)}, ИМО ${esc(r.vessel?.imo)} · ${esc(KIND[r.trial?.kind]||'')} ${fmt(r.trial?.dateFrom)} – ${fmt(r.trial?.dateTo)}<br>${r.result?.ok?'Система ДП соответствует классу 2 (DYNPOS-2)':'Не соответствует до устранения замечаний'}${(r.open||[]).length?` · открытых замечаний: ${left}`:''}</div></section>`}
 function card(r){const t=r.trial||{},v=r.vessel||{},c=r.counts||{},f=r.findings||{};const L=openLeft(r),C=r.closed||[];
  return`<section class="panel"><div class="bar"><div><div class="eyebrow mut">Запись реестра</div><h2 class="mono big">${esc(r.number)}</h2></div><div class="code"><span>Код проверки</span><b class="mono">${SDPC.short(r.fp)}</b></div></div>
@@ -120,7 +177,7 @@ function fileBox(){return`<section class="panel"><h2>Сверить файл</h2
 function verify(){return`<section class="panel" id="verify"><h2>Проверить документ</h2><p class="hint">Отсканируйте QR-код на документе или введите номер и код проверки.</p>
  <form id="vf" class="vrow"><label>Номер документа<input id="vn" autocomplete="off" placeholder="ДП-2026-0001" value="${esc(vnum)}"></label><label>Код проверки<input id="vc" autocomplete="off" class="mono" placeholder="A1B2-C3D4-E5F6-0718" value="${esc(vcode)}"></label><button class="pri" type="submit">Проверить</button></form>
  ${verdict&&verdict.form?`<div class="verdict ${verdict.c}"><b>${verdict.t}</b><div>${verdict.d}</div></div>`:''}</section>${fileBox()}`}
-function expert(){return`<section class="panel"><h2>Эксперт СДП</h2><p><b>Марченко Евгений Сергеевич</b>, независимый эксперт СДП, Санкт-Петербург. Документы о квалификации можно подтвердить в выдавших их организациях.</p><div class="tw"><table><thead><tr><th>Документ</th><th>Курс</th><th>Организация</th><th>Выдан</th><th>Контакт для проверки</th></tr></thead><tbody>${QUALS.map(q=>`<tr><td class="mono">${esc(q[0])}</td><td>${esc(q[1])}</td><td>${esc(q[2])}</td><td class="num">${q[3]}</td><td class="sub">${esc(q[4])}</td></tr>`).join('')}</tbody></table></div></section>`}
+function expert(){return`<section class="panel"><h2>Эксперт</h2><div class="org">${LOGO}<div><b>Экспертное сообщество «Связь и Радионавигация»</b><div class="sub">Санкт-Петербург · <a href="https://cirspb.ru/" target="_blank" rel="noopener">cirspb.ru</a></div></div></div><p><b>Марченко Евгений Сергеевич</b><br>Эксперт по системам динамического позиционирования</p>${CONTACT}<h3>Признание компании классификационными обществами</h3><ul class="cls"><li><span class="em"><img src="cls/rs.png" alt="РС" loading="lazy"></span><b>РС</b><span>Российский морской регистр судоходства</span></li><li><span class="em"><img src="cls/rko.png" alt="РКО" loading="lazy"></span><b>РКО</b><span>Российское классификационное общество</span></li><li><span class="em"><img src="cls/irs.png" alt="IRS" loading="lazy"></span><b>IRS</b><span>Indian Register of Shipping</span></li><li><span class="em"><img src="cls/classnk.png" alt="ClassNK" loading="lazy"></span><b>ClassNK</b><span>Nippon Kaiji Kyokai</span></li><li><span class="em"><img src="cls/rina.png" alt="RINA" loading="lazy"></span><b>RINA</b><span>Registro Italiano Navale</span></li><li><span class="em"><img src="cls/psr.png" alt="PSR" loading="lazy"></span><b>PSR</b><span>Panama Shipping Registrar</span></li></ul><p class="hint">Компания «Связь и Радионавигация» признана указанными классификационными обществами. Документы испытаний на этом сайте выпускает эксперт компании; классификационные общества их не выдают и не заверяют. Подробнее — на <a href="https://cirspb.ru/" target="_blank" rel="noopener">cirspb.ru</a>.</p><h3>Квалификация эксперта</h3><p class="hint">Документы о квалификации можно подтвердить в выдавших их организациях.</p><div class="tw"><table><thead><tr><th>Документ</th><th>Курс</th><th>Организация</th><th>Выдан</th><th>Контакт для проверки</th></tr></thead><tbody>${QUALS.map(q=>`<tr><td class="mono">${esc(q[0])}</td><td>${esc(q[1])}</td><td>${esc(q[2])}</td><td class="num">${q[3]}</td><td class="sub">${esc(q[4])}</td></tr>`).join('')}</tbody></table></div></section>`}
 function check(n,c){const r=byNum(n);if(!r)return{form:1,c:'bad',t:'Документ не найден в реестре',d:'Номер «'+esc(n)+'» не зарегистрирован. Документ не подтверждён.'};
  const code=String(c||'').toUpperCase().replace(/[^0-9A-F]/g,'');if(code&&code!==SDPC.short(r.fp).replace(/-/g,''))return{form:1,c:'bad',t:'Код проверки не совпадает',d:`Номер ${esc(r.number)} есть в реестре, но код на документе другой: документ изменён или поддельный.`};
  if(!code)return{form:1,c:'mid',t:'Введите код проверки',d:`Номер ${esc(r.number)} зарегистрирован. Чтобы подтвердить подлинность бумаги, введите код с документа. <a href="#${SDPC.anchor(r.number)}">Данные из реестра</a>`};
